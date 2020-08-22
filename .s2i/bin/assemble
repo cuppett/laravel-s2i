@@ -1,0 +1,16 @@
+#!/bin/bash -e
+
+source ${STI_SCRIPTS_PATH}/assemble
+
+# Running the Laravel test suite (ensure build contains all needed settings via environment variables)
+DB_DATABASE=/tmp/sqlite
+export DB_DATABASE
+echo "APP_ENV=local" > .env
+echo "APP_KEY=" >> .env
+php artisan config:clear
+php artisan key:generate
+touch ${DB_DATABASE}
+php artisan migrate --env=testing
+php artisan test --env=testing
+rm .env
+rm ${DB_DATABASE}

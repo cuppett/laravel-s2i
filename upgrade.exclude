@@ -1,0 +1,5 @@
+/.env
+/.s2i/
+/httpd-cfg
+/storage
+/upgrade.exclude

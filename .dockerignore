@@ -1,0 +1,9 @@
+.dockerignore
+.env*
+.git
+.idea
+.s2iignore
+Dockerfile.s2i-fake
+LICENSE
+README.md
+vendor

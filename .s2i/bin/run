@@ -1,0 +1,35 @@
+#!/bin/sh
+set -eu
+
+fix-permissions /var/www/
+
+# Copying over the new/current version of the application
+if [ "$(id -u)" = 0 ]; then
+    rsync_options="-rlDog --chown 1001:root"
+else
+    rsync_options="-rlD"
+fi
+rsync $rsync_options --delete --exclude-from=/opt/app-root/src/upgrade.exclude /opt/app-root/src/ /var/www/html/
+
+# Copy over the storage scaffolding only if it doesn't exist yet.
+if [ ! -d "/var/www/html/storage" ] || directory_empty "/var/www/html/storage"; then
+    rsync $rsync_options --include "/storage/" --exclude '/*' /opt/app-root/src/ /var/www/html/
+fi
+
+# Preparing application to run
+cd /var/www/html
+php artisan migrate --force
+if [ -z ${APP_KEY+x} ]; then
+    echo "APP_KEY environment variable is unset"
+    if ! test -f ".env"; then
+        echo ".env does not exist either. Trying to create file."
+        touch .env
+        echo "APP_KEY=" > .env
+        php artisan key:generate --force
+        php artisan config:cache
+    else
+        echo ".env file is present. Will pick up APP_KEY from there if it exists."
+    fi
+fi
+
+source ${STI_SCRIPTS_PATH}/run
