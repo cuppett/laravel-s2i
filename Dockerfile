@@ -1,4 +1,4 @@
-FROM quay.io/cuppett/ubi8-php74:latest
+FROM quay.io/cuppett/ubi8-php:74
 
 ENV DOCUMENTROOT="/public" \
     APP_NAME=Laravel \
