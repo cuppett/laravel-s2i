@@ -12,5 +12,19 @@ php artisan key:generate
 touch ${DB_DATABASE}
 php artisan migrate --env=testing
 php artisan test --env=testing
+
+if [ -f ./composer.phar ]
+then
+    ./composer.phar install --prefer-dist --optimize-autoloader --no-dev
+else
+    composer install --prefer-dist --optimize-autoloader --no-dev
+fi
+
+# Cleaning up prior to storing image
 rm .env
 rm ${DB_DATABASE}
+php artisan cache:clear
+php artisan config:clear
+php artisan event:clear
+php artisan route:clear
+php artisan view:clear
